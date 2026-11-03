@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=3a0b8f9f-b274-4557-9a20-95ad28a54ef7
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Calculadora de Impressão 3D
+    </title>
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: &#39;Segoe UI&#39;, system-ui, sans-serif;
+    background: #1a1a2e;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 16px;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  h1 {
+    color: #5b9bd5;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    padding: 10px 0 4px;
+    letter-spacing: 0.5px;
+  }
+
+  .card {
+    background: #252540;
+    border-radius: 14px;
+    padding: 16px;
+    border: 1px solid #33335a;
+  }
+
+  .card-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #8080b0;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .card-title.blue { color: #5b9bd5; }
+
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    color: #8080a8;
+    margin-bottom: 5px;
+  }
+
+  input[type=&#34;number&#34;] {
+    width: 100%;
+    background: #1a1a2e;
+    border: 1.5px solid #33335a;
+    border-radius: 8px;
+    color: #e0e0f0;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px 12px;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+  input[type=&#34;number&#34;]::-webkit-outer-spin-button,
+  input[type=&#34;number&#34;]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  input[type=&#34;number&#34;]:focus { border-color: #5b9bd5; }
+
+  /* Slider */
+  .slider-value {
+    font-size: 30px;
+    font-weight: 800;
+    color: #5b9bd5;
+    margin-bottom: 8px;
+  }
+
+  input[type=&#34;range&#34;] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    background: #33335a;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-bottom: 4px;
+    outline: none;
+  }
+  input[type=&#34;range&#34;]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    background: #5b9bd5;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  input[type=&#34;range&#34;]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    background: #5b9bd5;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+  }
+
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #5050a0;
+    margin-bottom: 14px;
+  }
+
+  /* Resultado principal */
+  .result-main {
+    background: #1a1a2e;
+    border: 2px solid #5b9bd5;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .result-main label { font-size: 12px; color: #8080a8; margin-bottom: 4px; }
+  .result-main .price {
+    font-size: 38px;
+    font-weight: 900;
+    color: #5b9bd5;
+    letter-spacing: -1px;
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .result-box {
+    background: #1a1a2e;
+    border-radius: 10px;
+    padding: 12px 14px;
+    border: 1px solid #33335a;
+  }
+  .result-box label { font-size: 11px; color: #8080a8; margin-bottom: 4px; }
+  .result-box .val { font-size: 20px; font-weight: 800; color: #e0e0f0; }
+  .val.green { color: #4ec94e; }
+  .val.red { color: #e05555; }
+
+  /* Detalhamento */
+  .breakdown {
+    background: #1e1e3a;
+    border-radius: 10px;
+    padding: 12px 14px;
+    border: 1px solid #33335a;
+  }
+  .breakdown-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6060a0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .brow {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #a0a0c8;
+    padding: 5px 0;
+    border-bottom: 1px solid #2a2a4a;
+  }
+  .brow:last-child { border-bottom: none; }
+  .brow span:last-child { color: #e0e0f0; font-weight: 600; }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <h1>
+        🖨️ Calculadora 3D
+      </h1>
+      <!-- Configurações -->
+      <div class="card">
+        <div class="card-title blue">
+          ⚙️ Configurações (custo do kg, energia...)
+        </div>
+        <div class="grid2">
+          <div>
+            <label for="custKg">
+              Custo do kg (R$)
+            </label>
+            <input type="number" id="custKg" value="100" min="0" step="0.01" />
+          </div>
+          <div>
+            <label for="energia">
+              Energia R$/hora
+            </label>
+            <input type="number" id="energia" value="0.72" min="0" step="0.01" />
+          </div>
+          <div>
+            <label for="embalagem">
+              Embalagem (R$)
+            </label>
+            <input type="number" id="embalagem" value="3.50" min="0" step="0.01" />
+          </div>
+          <div>
+            <label for="manutencao">
+              Manutenção (R$)
+            </label>
+            <input type="number" id="manutencao" value="0.50" min="0" step="0.01" />
+          </div>
+        </div>
+      </div>
+      <!-- Dados da Peça -->
+      <div class="card">
+        <div class="card-title">
+          🖨️ Dados da Peça
+        </div>
+        <div class="grid2">
+          <div>
+            <label for="filamento">
+              Filamento usado (g)
+            </label>
+            <input type="number" id="filamento" value="50" min="0" step="1" />
+          </div>
+          <div>
+            <label for="tempo">
+              Tempo de impressão (h)
+            </label>
+            <input type="number" id="tempo" value="2" min="0" step="0.5" />
+          </div>
+          <div>
+            <label for="quantidade">
+              Quantidade
+            </label>
+            <input type="number" id="quantidade" value="1" min="1" step="1" />
+          </div>
+          <div>
+            <label for="perda">
+              Perda / refugo (%)
+            </label>
+            <input type="number" id="perda" value="3" min="0" max="100" step="1" />
+          </div>
+        </div>
+      </div>
+      <!-- Margem -->
+      <div class="card">
+        <div class="card-title">
+          🎯 Margem Desejada
+        </div>
+        <div class="slider-value" id="margemDisplay">
+          35%
+        </div>
+        <input type="range" id="margem" min="5" max="200" value="35" step="1" />
+        <div class="slider-labels">
+          <span>          5%
+</span>
+          <span>          200%
+</span>
+        </div>
+        <div>
+          <label for="desconto">
+            Desconto por unidade (R$)
+          </label>
+          <input type="number" id="desconto" value="0" min="0" step="0.01" />
+        </div>
+      </div>
+      <!-- Resultado -->
+      <div class="card">
+        <div class="card-title">
+          💰 Resultado
+        </div>
+        <div class="result-main">
+          <label>
+            Preço sugerido por unidade
+          </label>
+          <div class="price" id="precoSugerido">
+            R$ 0,00
+          </div>
+        </div>
+        <div class="result-grid">
+          <div class="result-box">
+            <label>
+              Custo total
+            </label>
+            <div class="val" id="custoTotal">
+              R$ 0,00
+            </div>
+          </div>
+          <div class="result-box">
+            <label>
+              Lucro por unidade
+            </label>
+            <div class="val green" id="lucroUnidade">
+              R$ 0,00
+            </div>
+          </div>
+        </div>
+        <div class="breakdown">
+          <div class="breakdown-title">
+            Detalhamento do custo
+          </div>
+          <div class="brow">
+            <span>            Material (filamento)
+</span>
+            <span id="bMaterial">            R$ 0,00
+</span>
+          </div>
+          <div class="brow">
+            <span>            Energia elétrica
+</span>
+            <span id="bEnergia">            R$ 0,00
+</span>
+          </div>
+          <div class="brow">
+            <span>            Embalagem
+</span>
+            <span id="bEmbalagem">            R$ 0,00
+</span>
+          </div>
+          <div class="brow">
+            <span>            Manutenção
+</span>
+            <span id="bManutencao">            R$ 0,00
+</span>
+          </div>
+          <div class="brow">
+            <span>            Perda / refugo
+</span>
+            <span id="bPerda">            R$ 0,00
+</span>
+          </div>
+          <div class="brow">
+            <span>            Margem de lucro
+</span>
+            <span id="bMargem">            R$ 0,00
+</span>
+          </div>
+          <div class="brow">
+            <span>            Desconto (total)
+</span>
+            <span id="bDesconto">            R$ 0,00
+</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function fmt(v) {
+    return &#39;R$ &#39; + Math.abs(v).toLocaleString(&#39;pt-BR&#39;, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function calc() {
+    var custKg     = parseFloat(document.getElementById(&#39;custKg&#39;).value)     || 0;
+    var energia    = parseFloat(document.getElementById(&#39;energia&#39;).value)    || 0;
+    var embalagem  = parseFloat(document.getElementById(&#39;embalagem&#39;).value)  || 0;
+    var manutencao = parseFloat(document.getElementById(&#39;manutencao&#39;).value) || 0;
+    var filamento  = parseFloat(document.getElementById(&#39;filamento&#39;).value)  || 0;
+    var tempo      = parseFloat(document.getElementById(&#39;tempo&#39;).value)      || 0;
+    var quantidade = Math.max(1, parseFloat(document.getElementById(&#39;quantidade&#39;).value) || 1);
+    var perda      = parseFloat(document.getElementById(&#39;perda&#39;).value)      || 0;
+    var margem     = parseFloat(document.getElementById(&#39;margem&#39;).value)     || 0;
+    var desconto   = parseFloat(document.getElementById(&#39;desconto&#39;).value)   || 0;
+
+    document.getElementById(&#39;margemDisplay&#39;).textContent = margem + &#39;%&#39;;
+
+    var cMaterial   = (filamento / 1000) * custKg;
+    var cEnergia    = energia * tempo;
+    var cEmbalagem  = embalagem;
+    var cManutencao = manutencao;
+
+    var custoBaseUnit = cMaterial + cEnergia + cEmbalagem + cManutencao;
+    var cPerdaUnit    = custoBaseUnit * (perda / 100);
+    var custoUnit     = custoBaseUnit + cPerdaUnit;
+    var custoTotal    = custoUnit * quantidade;
+
+    var margemValorTotal  = custoTotal * (margem / 100);
+    var precoUnitBruto    = (custoTotal + margemValorTotal) / quantidade;
+    var precoFinal        = Math.max(0, precoUnitBruto - desconto);
+    var lucro             = precoFinal - custoUnit;
+
+    document.getElementById(&#39;precoSugerido&#39;).textContent = fmt(precoFinal);
+    document.getElementById(&#39;custoTotal&#39;).textContent    = fmt(custoTotal);
+
+    var lucroEl = document.getElementById(&#39;lucroUnidade&#39;);
+    lucroEl.textContent = fmt(lucro);
+    lucroEl.className   = &#39;val &#39; + (lucro &gt;= 0 ? &#39;green&#39; : &#39;red&#39;);
+
+    document.getElementById(&#39;bMaterial&#39;).textContent  = fmt(cMaterial   * quantidade);
+    document.getElementById(&#39;bEnergia&#39;).textContent   = fmt(cEnergia    * quantidade);
+    document.getElementById(&#39;bEmbalagem&#39;).textContent = fmt(cEmbalagem  * quantidade);
+    document.getElementById(&#39;bManutencao&#39;).textContent= fmt(cManutencao * quantidade);
+    document.getElementById(&#39;bPerda&#39;).textContent     = fmt(cPerdaUnit  * quantidade);
+    document.getElementById(&#39;bMargem&#39;).textContent    = fmt(margemValorTotal);
+    document.getElementById(&#39;bDesconto&#39;).textContent  = fmt(desconto    * quantidade);
+  }
+
+  [&#39;custKg&#39;,&#39;energia&#39;,&#39;embalagem&#39;,&#39;manutencao&#39;,&#39;filamento&#39;,&#39;tempo&#39;,&#39;quantidade&#39;,&#39;perda&#39;,&#39;margem&#39;,&#39;desconto&#39;]
+    .forEach(function(id) {
+      document.getElementById(id).addEventListener(&#39;input&#39;, calc);
+    });
+
+  calc();
+    </script>
+  </body>
+</html>
